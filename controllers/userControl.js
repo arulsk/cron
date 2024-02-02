@@ -1,9 +1,10 @@
 const JWT = require('jsonwebtoken')
 const crypto = require('crypto');
+const userAuth = require('../models/userModel');
 const secret_token = crypto.randomBytes(64).toString('hex');
 
 const genterateAcessToken = (data)=>{
-    return JWT.sign({data},secret_token,{expiresIn : '3m'})
+    return JWT.sign({data},secret_token,{expiresIn : '2m'})
   }
   
   const generateRefreshToken = ()=>{
@@ -12,15 +13,33 @@ const genterateAcessToken = (data)=>{
   
 const refresh_Tokens = {}
   
-  const login = ((req,res)=>{
-      //after auth
+  const login = (async(req,res)=>{
+    
   try{
       const userName = req.body.userName
       const userEmail = req.body.userEmail
-      const UserPassword = req.body.userPassword
-      const Access_token = genterateAcessToken({userName,userEmail,UserPassword})
-      const Refresh_token = generateRefreshToken()
-      refresh_Tokens[Refresh_token] = {userName,userEmail,UserPassword}
+      const userPassword = req.body.userPassword
+      
+      if(!userName || !userEmail || !userPassword ){
+         return  res.status(500).json({
+            Error : "user not entered userName or userEmail or userPassword "
+          })
+      }
+
+      const user = await userAuth.findOne({
+        where: {
+          userEmail: userEmail,
+          userpassword: userPassword,
+        },
+        
+      });
+      if (!user) {
+        return res.status(401).json({ error: 'Invalid email or password' });
+      }
+      
+      const Access_token = await genterateAcessToken({userName,userEmail,userPassword})
+      const Refresh_token = await generateRefreshToken()
+      refresh_Tokens[Refresh_token] = {userName,userEmail,userPassword}
       res.json({access_token :Access_token,refresh_token :Refresh_token})
   
   }catch(err){
@@ -50,7 +69,7 @@ const refresh_Tokens = {}
 
   const protected = ((req,res)=>{
     const user = req.user;
-    res.json({ message: 'This is a protected route', user });
+    return res.json({ message: 'This is a protected route', user });
   
   })
   
