@@ -1,7 +1,9 @@
 const JWT = require('jsonwebtoken');
 const { secret_token } = require("../controllers/userControl");
 
-const authenticate_token = (req, res, next) => {
+const authenticate_token = (role)=>{
+  
+return  (req, res, next) => {
   try {
     const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
     if (!token) {
@@ -12,6 +14,11 @@ const authenticate_token = (req, res, next) => {
         return res.status(403).json({ error: 'Invalid token' });
       }
       req.user = user;
+      console.log(role);
+      console.log(user.data.role);
+      if(user.data.role !== role){
+        return res.status(403).json({ error: 'Forbidden - Insufficient permissions' });
+      }
       next();
     });
   
@@ -22,5 +29,5 @@ const authenticate_token = (req, res, next) => {
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
-
+}
 module.exports = authenticate_token;

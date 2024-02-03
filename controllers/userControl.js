@@ -13,33 +13,29 @@ const genterateAcessToken = (data)=>{
   
 const refresh_Tokens = {}
   
-  const login = (async(req,res)=>{
+const login = (async(req,res)=>{
     
   try{
       const userName = req.body.userName
       const userEmail = req.body.userEmail
       const userPassword = req.body.userPassword
+      const role = req.body.role;
       
-      if(!userName || !userEmail || !userPassword ){
+      if(!userName || !userEmail || !userPassword || !role ){
          return  res.status(500).json({
-            Error : "user not entered userName or userEmail or userPassword "
+            Error : "user not entered userName or userEmail or userPassword or role "
           })
       }
 
-      const user = await userAuth.findOne({
-        where: {
-          userEmail: userEmail,
-          userpassword: userPassword,
-        },
-        
-      });
+      const user = await userAuth.userAuthentiacte(userEmail, userPassword, role);
+
       if (!user) {
-        return res.status(401).json({ error: 'Invalid email or password' });
+        return res.status(401).json({ error: 'Invalid email or password or role' });
       }
       
-      const Access_token = await genterateAcessToken({userName,userEmail,userPassword})
+      const Access_token = await genterateAcessToken({userName,userEmail,userPassword,role})
       const Refresh_token = await generateRefreshToken()
-      refresh_Tokens[Refresh_token] = {userName,userEmail,userPassword}
+      refresh_Tokens[Refresh_token] = {userName,userEmail,userPassword,role}
       res.json({access_token :Access_token,refresh_token :Refresh_token})
   
   }catch(err){
@@ -69,8 +65,15 @@ const refresh_Tokens = {}
 
   const protected = ((req,res)=>{
     const user = req.user;
-    return res.json({ message: 'This is a protected route', user });
+     res.json({ message: 'This is a protected route', user });
   
   })
+
+  const user = ((req,res)=>{
+    const userName = req.user.data.userName
+    const userEmail= req.user.data.userEmail
+    res.json({message : 'user access area',userName,userEmail})
+  })
   
-  module.exports = {login,protected,refresh,secret_token};
+  module.exports = {login,protected,refresh,secret_token,user};
+  
