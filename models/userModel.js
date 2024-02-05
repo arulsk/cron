@@ -1,25 +1,94 @@
 const Sequelize = require('sequelize');
 const sequleize = require('../config/db');
 
-const userAuth = sequleize.define("JWT", {
-  
-    userName: { type: Sequelize.STRING },
-    userEmail: { type: Sequelize.STRING },
-    userpassword: { type: Sequelize.STRING },
-    role : {type : Sequelize.STRING}
+const userAuth = sequleize.define("jwt", {
+    userId : {
+      type : Sequelize.INTEGER,
+      primaryKey : true,
+      autoIncrement: true 
+    },
+    userName: { 
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    userEmail: { 
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    userPassword: { 
+      type: Sequelize.STRING(60),
+      allowNull: false,
+     },
+    role : {
+      type : Sequelize.STRING,
+      allowNull: false,
+    }
 
 },{
     timestamps: false,
   });
 
 
-const userAuthentiacte = async(userEmail,userPassword,role) => {
+
+  const UserDetails = sequleize.define('user_Details', {
+    user_id: {
+      type: Sequelize.INTEGER,
+      primaryKey : true,
+      allowNull: false,
+    },
+    first_Name: {
+      type: Sequelize.STRING,
+    },
+    last_Name: {
+      type: Sequelize.STRING,
+    },
+    age: {
+      type: Sequelize.INTEGER,
+    },
+    email: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      unique: true,
+    },
+  });
+  
+  const UserCountry = sequleize.define('user_country', {
+    country_id : {
+      type: Sequelize.INTEGER,
+      autoIncrement  :true,
+      primaryKey : true,
+      allowNull: false,
+    },
+    user_id: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      forignKey : true
+    },
+    country: {
+      type: Sequelize.STRING,
+    },
+  });
+    
+
+
+
+const userAuthentiacte = async(userEmail,role) => {
   return await userAuth.findOne({
     where: {
-      userEmail: userEmail,
-      userpassword: userPassword,
-      role : role
+     userEmail,
+      role
     },        
   });
+
+  
   }
-module.exports = {userAuth,userAuthentiacte};
+
+  const createUser = async(userName,userEmail,hashPassword,role)=>{
+   return await userAuth.create({
+      userName,
+      userEmail,
+     userPassword :hashPassword,
+      role
+    })
+  }
+module.exports = {userAuth,userAuthentiacte,createUser,UserDetails,UserCountry};

@@ -1,5 +1,5 @@
 const JWT = require('jsonwebtoken');
-const { secret_token } = require("../controllers/userControl");
+const { secret_token } = require("../controllers/mainController");
 
 const authenticate_token = (role)=>{
   

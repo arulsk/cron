@@ -2,7 +2,7 @@ const express = require('express')
 const  route  = require('./routes/userRoutes')
 const {userAuth} = require('./models/userModel')
 const app = express()
-const port = 4000
+const port = 5000
 
 userAuth.sync()
 app.use(express.json())
