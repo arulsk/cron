@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const getUsers = async (req, res) => {
     try {
         const users = await userAuth.userAuth.findAll();
-        res.status(200).json(users);
+        res.status(201).json(users);
     } catch (error) {
         console.error("Error fetching users:", error);
         res.status(500).json({ message: "Internal Server Error" });
@@ -20,7 +20,7 @@ const getUserById = async (req, res) => {
             }
         });
         if (user) {
-            res.status(200).json(user);
+            res.status(201).json(user);
         } else {
             res.status(404).json({ message: "User Not Found" });
         }
@@ -44,7 +44,12 @@ const updateUser = async (req, res) => {
                 }
             }
         );
-        res.status(200).json(update);
+
+        if (update[0] === 0) {
+            res.status(404).json({ message: "User Not Found" });
+        } else {
+            res.status(201).json({ message: "Updated successfully" });
+        }
     } catch (error) {
         console.error("Error updating user:", error);
         res.status(500).json({ message: "Internal Server Error" });
@@ -59,15 +64,15 @@ const deleteUser = async (req, res) => {
                 userId: id
             }
         });
-        if (deleteUser) {
-            res.status(200).json({ message: "Deleted successfully" });
-        } else {
+
+        if (deleteUser === 0) {
             res.status(404).json({ message: "User Not Found" });
+        } else {
+            res.status(201).json({ message: "Deleted successfully" });
         }
     } catch (error) {
         console.error("Error deleting user:", error);
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
-
 module.exports = { getUsers, getUserById, deleteUser, updateUser };

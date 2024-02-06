@@ -5,7 +5,7 @@ const secret_token = crypto.randomBytes(64).toString('hex');
 const bcyrpt = require('bcrypt')
 
 const genterateAcessToken = (data)=>{
-    return JWT.sign({data},secret_token,{expiresIn : '2m'})
+    return JWT.sign({data},secret_token,{expiresIn : '5m'})
   }
   
   const generateRefreshToken = ()=>{

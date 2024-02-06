@@ -30,7 +30,7 @@ const userAuth = sequleize.define("jwt", {
 
 
 
-  const UserDetails = sequleize.define('user_Details', {
+  const UserDetails = sequleize.define('userDetails', {
     user_id: {
       type: Sequelize.INTEGER,
       primaryKey : true,
@@ -52,7 +52,7 @@ const userAuth = sequleize.define("jwt", {
     },
   });
   
-  const UserCountry = sequleize.define('user_country', {
+  const UserCountry = sequleize.define('usercountry', {
     country_id : {
       type: Sequelize.INTEGER,
       autoIncrement  :true,
@@ -70,6 +70,8 @@ const userAuth = sequleize.define("jwt", {
   });
     
 
+UserDetails.hasOne(UserCountry, { foreignKey: 'user_id' });
+UserCountry.belongsTo(UserDetails, { foreignKey: 'user_id' });
 
 
 const userAuthentiacte = async(userEmail,role) => {

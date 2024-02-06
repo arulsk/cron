@@ -1,11 +1,11 @@
-
 const ExcelJS = require('exceljs');
 const path = require('path');
-const userTable = require('../models/userModel')
+const userTable = require('../models/userModel');
 const sequelize = require('../config/db');
-const filePath = path.join(__dirname,'../assets/output.xlsx')
 
-const readExcel = async (req,res) => {
+const readExcel = async (req, res) => {
+  const filePath = path.join(__dirname, '../assets', req.body.filePath);
+
   const workbook = new ExcelJS.Workbook();
 
   try {
@@ -16,7 +16,7 @@ const readExcel = async (req,res) => {
 
     const worksheet = workbook.getWorksheet(1);
 
-    await sequelize.sync()
+    await sequelize.sync();
 
     worksheet.eachRow({ includeEmpty: false, skipHeader: true, from: 2 }, async (row, rowNumber) => {
       const rowData = row.values;
@@ -32,18 +32,19 @@ const readExcel = async (req,res) => {
 
         await userTable.UserCountry.create({
           user_id: userDetails.user_id,
-          country: rowData[6], 
+          country: rowData[6],
         });
-         res.status(201).json("file import sucessful")
+
+        console.log(`Row ${rowNumber} inserted successfully`);
       } catch (error) {
-        console.error(`Error inserting row: ${error.message}`);
+        console.error(`Error inserting row ${rowNumber}:`, error);
       }
     });
-
-    console.log('Data successfully inserted into userDetails and user_country tables');
+    res.status(201).json("file import successful");
   } catch (error) {
     console.error('Error:', error.message);
-  } 
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
 };
 
-module.exports = {readExcel}
+module.exports = { readExcel };

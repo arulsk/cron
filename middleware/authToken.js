@@ -14,8 +14,6 @@ return  (req, res, next) => {
         return res.status(403).json({ error: 'Invalid token' });
       }
       req.user = user;
-      console.log(role);
-      console.log(user.data.role);
       if(user.data.role !== role){
         return res.status(403).json({ error: 'Forbidden - Insufficient permissions' });
       }
