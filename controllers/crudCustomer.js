@@ -1,6 +1,6 @@
 const dbTable = require('../models/userModel')
-
-const createCustomer = async (req,res)=>{
+const cron = require("node-cron")
+const createCustomer =  async (req,res)=>{
     try{
     const{user_id,first_Name,last_Name,age,email} = req.body;
     if(!user_id || !first_Name || !last_Name || !age || !email){
@@ -18,7 +18,8 @@ const createCustomer = async (req,res)=>{
      return res.json({Error : err})
     }
 }
-const getCustomers = async(req,res)=>{
+const getCustomers = ()=>{
+    cron.schedule(' */4 * * * *',async(req,res)=>{
     try{
       const customerData = await dbTable.UserDetails.findAll()
       res.status(201).json(customerData)
@@ -26,7 +27,7 @@ const getCustomers = async(req,res)=>{
         res.status(500).json({message : err})
 
     }
-}
+})}
 
 const getCustomerById = async (req, res) => {
     try {

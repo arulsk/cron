@@ -2,7 +2,6 @@ const express = require("express");
 const route = express.Router();
 const mainController = require("../controllers/mainController");
 const authenticate_token = require("../middleware/authToken");
-
 route.post('/signUp',mainController.signUpPage);
 route.post('/login',mainController.loginPage);
 route.post('/refresh',mainController.refreshPage);

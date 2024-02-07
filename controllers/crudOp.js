@@ -1,15 +1,18 @@
 const userAuth = require('../models/userModel');
 const bcrypt = require('bcrypt');
+const cron = require('node-cron')
 
-const getUsers = async (req, res) => {
+const getUsers = ()=>{ 
+    const job = cron.schedule('*/1 * * * * ',async (req, res) => {
     try {
         const users = await userAuth.userAuth.findAll();
-        res.status(201).json(users);
+        console.log(users);
+        job.stop()
     } catch (error) {
         console.error("Error fetching users:", error);
         res.status(500).json({ message: "Internal Server Error" });
     }
-};
+},null,true,"UTC")}
 
 const getUserById = async (req, res) => {
     try {

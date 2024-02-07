@@ -1,6 +1,7 @@
 const express = require('express')
 const  route  = require('./routes/userRoutes')
 const {userAuth} = require('./models/userModel')
+
 const app = express()
 const port = 5000
 

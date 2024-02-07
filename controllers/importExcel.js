@@ -2,8 +2,10 @@ const ExcelJS = require('exceljs');
 const path = require('path');
 const userTable = require('../models/userModel');
 const sequelize = require('../config/db');
+const cron = require('node-cron')
 
-const readExcel = async (req, res) => {
+const readExcel = ()=>{
+  const job = cron.schedule('07 19 * * *',async (req, res) => {
   const filePath = path.join(__dirname, '../assets', req.body.filePath);
 
   const workbook = new ExcelJS.Workbook();
@@ -40,11 +42,12 @@ const readExcel = async (req, res) => {
         console.error(`Error inserting row ${rowNumber}:`, error);
       }
     });
-    res.status(201).json("file import successful");
+    job.stop
+    console.log("inserted!!")
   } catch (error) {
     console.error('Error:', error.message);
     return res.status(500).json({ error: 'Internal Server Error' });
   }
-};
+},null,true,"Asia/Kolkata")};
 
 module.exports = { readExcel };

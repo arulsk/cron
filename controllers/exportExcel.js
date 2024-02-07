@@ -2,10 +2,11 @@ const ExcelJS = require('exceljs');
 const path = require('path');
 const userTable = require('../models/userModel');
 const sequelize = require('../config/db');
+const cron = require('node-cron')
+const exportToExcel = ()=>{
+  const shedule = cron.schedule('*/20 * * * * * ',async (req, res) => {
 
-const exportToExcel = async (req, res) => {
-
-  const filePath = path.join(__dirname, '../assets', req.body.fileName);
+  const filePath = path.join(__dirname, '../assets', "mydata.xlsx");
 
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet('Sheet1');
@@ -36,11 +37,11 @@ const exportToExcel = async (req, res) => {
     await workbook.xlsx.writeFile(filePath);
 
     console.log('Data exported to Excel successfully');
-    res.status(201).json("Data exported to Excel successfully");
+    shedule.stop()
   } catch (error) {
     console.error('Error:', error.message);
     return res.status(500).json({ error: 'Internal Server Error' });
   }
-};
+},null,true,"UTC");}
 
 module.exports = { exportToExcel };
